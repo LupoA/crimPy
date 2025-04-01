@@ -1,0 +1,48 @@
+{
+  "date": "19-03-2025",
+  "exercises": [
+    {
+      "type": "fingerboard",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"edge": "45mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "60s"},
+        {"edge": "25mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "120s"},
+        {"edge": "25mm", "reps": 3, "timeon": "7s", "timeoff": "3s", "rest": "60s"}
+      ]
+    },
+    {
+      "type": "campus board",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "90s", "sides": "R"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "90s", "sides": "L"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "90s", "sides": "R"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "90s", "sides": "L"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "90s", "sides": "R"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "90s", "sides": "L"},
+        {"edge": "28mm", "steps": "1-2", "timeoff": "90s", "sides": "R"},
+        {"edge": "28mm", "steps": "1-2", "timeoff": "90s", "sides": "L"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "90s", "sides": "R"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "90s", "sides": "L"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "120s", "sides": "R"},
+        {"edge": "28mm", "steps": "1-2-3", "timeoff": "120s", "sides": "L"},
+        {"edge": "20mm", "steps": "1-2", "timeoff": "120s", "sides": "R"},
+        {"edge": "20mm", "steps": "1-2", "timeoff": "120s", "sides": "L"},
+        {"edge": "20mm", "steps": "1-3", "timeoff": "420s", "sides": "R"},
+        {"edge": "20mm", "steps": "1-3", "timeoff": "420s", "sides": "L"}
+      ]
+    },
+    {
+      "type": "project",
+      "executed": true,
+      "order": 3,
+      "sets": [
+        {"attempts": 1, "timeoff": "300s", "success": false},
+{"attempts": 2, "timeoff": "300s", "success": false},
+{"attempts": 5, "timeoff": "180s", "success": true}
+      ]
+    }
+  ]
+}

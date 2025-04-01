@@ -1,0 +1,37 @@
+{
+  "date": "28-03-2025",
+  "exercises": [
+    {
+      "type": "project",
+      "executed": true,
+      "order": 3,
+      "sets": [
+        {"attempts": 4, "timeoff": "300s", "success": false},
+        {"attempts": 1, "timeoff": "300s", "success": false},
+        {"attempts": 2, "timeoff": "300s", "success": false}
+      ]
+    },
+    {
+      "type": "bicep_curls",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"weight_lb": 20, "timeoff": "120s", "reps": 10},
+{"weight_lb": 20, "timeoff": "180s", "reps": 10},
+{"weight_lb": 20, "timeoff": "120s", "reps": 10}
+      ]
+    },
+    {
+      "type": "pullup",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "180s"},
+ {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "240s"},
+ {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "240s"},
+ {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "300s"},
+ {"edge": "bar-reverse", "repetitions": 8, "weight_lb": 20, "timeoff": "180s"}
+      ]
+    }
+  ]
+}

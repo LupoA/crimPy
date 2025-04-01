@@ -1,0 +1,59 @@
+{
+  "date": "31-03-2025",
+  "exercises": [
+    {
+      "type": "fingerboard",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "90s"},
+        {"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "120s"},
+ {"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "120s"}
+      ]
+    },
+    {
+      "type": "campus board",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"edge": "22mm", "steps": "1-2-4", "timeoff": "60s", "sides": "R"},
+        {"edge": "22mm", "steps": "1-2-4", "timeoff": "60s", "sides": "L"},
+        {"edge": "22mm", "steps": "1-2-4-5", "timeoff": "60s", "sides": "R"},
+        {"edge": "22mm", "steps": "1-2-4-5", "timeoff": "60s", "sides": "L"},
+        {"edge": "22mm", "steps": "1-2-4-5", "timeoff": "60s", "sides": "R"},
+        {"edge": "22mm", "steps": "1-2-4-5", "timeoff": "60s", "sides": "L"},
+        {"edge": "22mm", "steps": "1-2-4-5", "timeoff": "60s", "sides": "R"},
+        {"edge": "22mm", "steps": "1-2-4-5", "timeoff": "60s", "sides": "L"},
+        {"edge": "22mm", "steps": "1-2-4-5", "timeoff": "60s", "sides": "R"},
+        {"edge": "22mm", "steps": "1-2", "timeoff": "60s", "sides": "L"},
+        {"edge": "22mm", "steps": "1-2-4", "timeoff": "90s", "sides": "R"},
+        {"edge": "22mm", "steps": "1-2-4", "timeoff": "60s", "sides": "L"},
+        {"edge": "22mm", "steps": "1-2-4", "timeoff": "60s", "sides": "R"},
+        {"edge": "28mm", "steps": "1-2-4", "timeoff": "90s", "sides": "L"}
+      ]
+    },
+    {
+      "type": "project",
+      "executed": true,
+      "order": 3,
+      "sets": [
+        {"attempts": 2, "timeoff": "120s", "success": false},
+        {"attempts": 2, "timeoff": "120s", "success": false},
+        {"attempts": 2, "timeoff": "120s", "success": true},
+        {"attempts": 1, "timeoff": "120s", "success": true},
+        {"attempts": 4, "timeoff": "180s", "success": false}
+      ]
+    },
+    {
+      "type": "pullup",
+      "executed": true,
+      "order": 4,
+      "sets": [
+        {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "120s"},
+        {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "180s"},
+        {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "180s"},
+        {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "180s"}
+      ]
+    }
+  ]
+}

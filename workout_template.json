@@ -1,0 +1,77 @@
+{
+  "date": "YYYY-MM-DD",
+  "exercises": [
+    {
+      "type": "fingerboard",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "90s"}
+      ]
+    },
+    {
+      "type": "campus board",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"edge": "20mm", "steps": "1-2-4", "timeoff": "15s", "sides": "L"}
+      ]
+    },
+    {
+      "type": "project",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"attempts": 3, "timeoff": "300s", "success": false}
+      ]
+    },
+    {
+      "type": "sub_project",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"attempts": 1, "timeoff": "300s", "success": true}
+      ]
+    },
+    {
+      "type": "6in6",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"n_success": 6, "timeoff": "300s"}
+      ]
+    },
+    {
+      "type": "campus_boulder",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"success": true, "timeoff": "300s"}
+      ]
+    },
+    {
+      "type": "pullup",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"edge": "bar", "repetitions": 8, "weight_kg": 10, "timeoff": "100s"}
+      ]
+    },
+    {
+      "type": "pullup_lockoff",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"edge": "bar", "repetitions": 8, "weight_kg": 0, "locktime": "3s", "timeoff": "100s", "locktype": "full"}
+      ]
+    },
+    {
+      "type": "deadhang",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"edge": "bar", "weight_kg": 0, "timeon": "120", "timeoff": "60s"},
+      ]
+    }
+  ]
+}
