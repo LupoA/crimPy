@@ -101,6 +101,7 @@ ax.set_xlabel("Date")
 ax.set_ylabel("# Repetitions")
 # If pullup sets always use the same edge include that in the title
 ax.set_title("Pullup progression")
+plt.grid(alpha=0.3)
 ax.legend()
 plt.tight_layout()
 plt.show()

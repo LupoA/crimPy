@@ -39,23 +39,29 @@ for file_path in json_files:
     pu_intensity.append(breakdown.get("pullup", 0))
     proj_intensity.append(breakdown.get("project", 0))
 
-# Sort by date
+# Sort workouts by date.
 sorted_data = sorted(zip(dates, fb_intensity, cb_intensity, pu_intensity, proj_intensity),
                      key=lambda x: x[0])
 dates, fb_intensity, cb_intensity, pu_intensity, proj_intensity = zip(*sorted_data)
 
-x = np.arange(len(dates))
+# Compute days elapsed since the first workout.
+start_date = dates[0]
+days_elapsed = [(dt - start_date).days for dt in dates]
+x = np.array(days_elapsed)
+
+# Compute total intensity for each workout.
+total_intensity = np.array(fb_intensity) + np.array(cb_intensity) + np.array(pu_intensity) + np.array(proj_intensity)
 
 # Define colors for each exercise type.
 colors = {
     "fingerboard": "#e41a1c",  # red
     "campusboard": "#377eb8",  # blue
-    "pullup": "#4daf4a",  # green
-    "project": "#984ea3"  # purple
+    "pullup": "#4daf4a",       # green
+    "project": "#984ea3"       # purple
 }
 
 # Prepare stacked data.
-bottom = np.zeros(len(dates))
+bottom = np.zeros(len(x))
 fig, ax = plt.subplots(figsize=(12, 7))
 
 ax.bar(x, fb_intensity, bottom=bottom, color=colors["fingerboard"], label="Fingerboard")
@@ -70,14 +76,15 @@ bottom += np.array(pu_intensity)
 ax.bar(x, proj_intensity, bottom=bottom, color=colors["project"], label="Project")
 bottom += np.array(proj_intensity)
 
+# Plot the total intensity as a continuous line over the stacked bars.
+ax.plot(x, total_intensity, color="black", marker="o", linestyle="-", linewidth=2, label="Total Intensity")
+
 # Format the x-axis.
 ax.set_xticks(x)
-date_labels = [dt.strftime("%d-%m-%Y") for dt in dates]
-ax.set_xticklabels(date_labels, rotation=45)
-ax.set_xlabel("Workout Date")
+ax.set_xlabel("Days")
 ax.set_ylabel("Intensity")
 ax.set_title(" ")
+ax.legend(title="Exercise Type", loc="upper left", bbox_to_anchor=(1, 1))
 plt.grid(alpha=0.3)
-ax.legend()
 plt.tight_layout()
 plt.show()
