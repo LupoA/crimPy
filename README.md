@@ -16,8 +16,10 @@ Excercises supported:
 - Fingerboard
 - Projects
 
-Examples of plot produced:
+Examples of plots produced:
 -
 
 
 ![examplePlotIntensity.png](examplePlotIntensity.png)
+
+![pullUpExamples.png](pullUpExamples.png)
