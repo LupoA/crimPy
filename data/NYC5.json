@@ -6,9 +6,9 @@
       "executed": true,
       "order": 1,
       "sets": [
-        {"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "90s"},
-        {"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "120s"},
- {"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "120s"}
+        {"edge": "20mm", "reps": 6, "timeon": "7s", "rest": "90s", "timeoff": "3s"},
+        {"edge": "20mm", "reps": 6, "timeon": "7s", "rest": "120s", "timeoff": "3s"},
+ {"edge": "20mm", "reps": 6, "timeon": "7s", "rest": "120s", "timeoff": "3s"}
       ]
     },
     {
