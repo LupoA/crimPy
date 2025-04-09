@@ -30,7 +30,7 @@ for file_path in json_files:
     except Exception as e:
         continue
 
-    calc = WorkoutIntensityCalculator(data)
+    calc = WorkoutIntensityCalculator(data, source_file=os.path.basename(file_path), date=workout_date)
     breakdown = calc.calculate_intensity_breakdown()
 
     dates.append(date_obj)

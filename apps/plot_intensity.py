@@ -15,6 +15,8 @@ fb_intensity = []  # Fingerboard
 cb_intensity = []  # Campusboard
 pu_intensity = []  # Pullup
 proj_intensity = []  # Project
+proj_grades = []  # to store label per workout
+
 
 json_files = glob.glob(os.path.join(data_dir, "*.json"))
 for file_path in json_files:
@@ -30,8 +32,18 @@ for file_path in json_files:
     except Exception as e:
         continue
 
-    calc = WorkoutIntensityCalculator(data)
+    calc = WorkoutIntensityCalculator(data, source_file=os.path.basename(file_path), date=workout_date)
     breakdown = calc.calculate_intensity_breakdown()
+
+    grade_label = None
+    for exercise in data.get("exercises", []):
+        if exercise.get("type", "").lower() == "project":
+            for s in exercise.get("sets", []):
+                if s.get("success") and "grade" in s:
+                    grade_label = s["grade"]
+                    break  # take the first successful grade only
+            break
+    proj_grades.append(grade_label)
 
     dates.append(date_obj)
     fb_intensity.append(breakdown.get("fingerboard", 0))
@@ -40,10 +52,9 @@ for file_path in json_files:
     proj_intensity.append(breakdown.get("project", 0))
 
 # Sort workouts by date.
-sorted_data = sorted(zip(dates, fb_intensity, cb_intensity, pu_intensity, proj_intensity),
+sorted_data = sorted(zip(dates, fb_intensity, cb_intensity, pu_intensity, proj_intensity, proj_grades),
                      key=lambda x: x[0])
-dates, fb_intensity, cb_intensity, pu_intensity, proj_intensity = zip(*sorted_data)
-
+dates, fb_intensity, cb_intensity, pu_intensity, proj_intensity, proj_grades = zip(*sorted_data)
 # Compute days elapsed since the first workout.
 start_date = dates[0]
 days_elapsed = [(dt - start_date).days for dt in dates]
@@ -75,6 +86,16 @@ bottom += np.array(pu_intensity)
 
 ax.bar(x, proj_intensity, bottom=bottom, color=colors["project"], label="Project")
 bottom += np.array(proj_intensity)
+
+for i, (xi, proj, label) in enumerate(zip(x, proj_intensity, proj_grades)):
+    if label and proj > 0:
+        ax.text(
+            xi, bottom[i] - proj / 2,  # place roughly centered vertically in the bar
+            label,
+            ha="center", va="center",
+            fontsize=12, color="black", fontweight="bold",
+            rotation=0
+        )
 
 # Plot the total intensity as a continuous line over the stacked bars.
 ax.plot(x, total_intensity, color="black", marker="o", linestyle="-", linewidth=2, label="Total Intensity")

@@ -1,0 +1,38 @@
+{
+  "date": "08-04-2025",
+  "exercises": [
+    {
+      "type": "fingerboard",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"edge": "35mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "60s"},
+{"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "60s"}
+      ]
+    },
+    {
+      "type": "campus board",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"edge": "20mm", "steps": "1-2-4", "timeoff": "15s", "sides": "L"}
+      ]
+    },
+    {
+      "type": "project",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"attempts": 7, "timeoff": "180s", "success": true, "grade": "v7"}
+      ]
+    },
+    {
+      "type": "pullup",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"edge": "bar", "repetitions": 8, "weight_kg": 10, "timeoff": "100s"}
+      ]
+    }
+  ]
+}

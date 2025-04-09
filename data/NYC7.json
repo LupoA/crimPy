@@ -1,0 +1,96 @@
+{
+  "date": "04-04-2025",
+  "exercises": [
+    {
+      "type": "fingerboard",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"edge": "35mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "90s"},
+{"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "90s"},
+{"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "90s"},
+{"edge": "35mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "90s"}
+      ]
+    },
+    {
+      "type": "campus board",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"edge": "22mm", "steps": "1-2-3", "timeoff": "60s", "sides": "R"},
+{"edge": "22mm", "steps": "1-2-3", "timeoff": "60s", "sides": "L"},
+{"edge": "22mm", "steps": "1-2-3-4", "timeoff": "60s", "sides": "R"},
+{"edge": "22mm", "steps": "1-2-3-4", "timeoff": "90s", "sides": "L"},
+{"edge": "22mm", "steps": "1-2-4", "timeoff": "90s", "sides": "R"},
+{"edge": "22mm", "steps": "1-2-4", "timeoff": "90s", "sides": "L"},
+{"edge": "22mm", "steps": "1-2-4-5", "timeoff": "90s", "sides": "R"},
+{"edge": "22mm", "steps": "1-2-4", "timeoff": "90s", "sides": "L"},
+{"edge": "22mm", "steps": "1-2-4-5", "timeoff": "90s", "sides": "R"},
+{"edge": "22mm", "steps": "1-2-4", "timeoff": "180s", "sides": "L"}
+      ]
+    },
+    {
+      "type": "project",
+      "executed": true,
+      "order": 4,
+      "sets": [
+        {"attempts": 2, "timeoff": "300s", "success": false},
+ {"attempts": 4, "timeoff": "300s", "success": false},
+ {"attempts": 2, "timeoff": "300s", "success": false}
+      ]
+    },
+    {
+      "type": "sub_project",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"attempts": 1, "timeoff": "300s", "success": true}
+      ]
+    },
+    {
+      "type": "6in6",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"n_success": 6, "timeoff": "300s"}
+      ]
+    },
+    {
+      "type": "campus_boulder",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"success": true, "timeoff": "300s"}
+      ]
+    },
+    {
+      "type": "pullup",
+      "executed": true,
+      "order": 5,
+      "sets": [
+        {"edge": "bar", "repetitions": 8, "weight_lb": 30, "timeoff": "120s"},
+ {"edge": "bar", "repetitions": 8, "weight_lb": 30, "timeoff": "120s"},
+ {"edge": "bar", "repetitions": 8, "weight_lb": 25, "timeoff": "120s"}
+      ]
+    },
+    {
+      "type": "pullup_lockoff",
+      "executed": false,
+      "order": 0,
+      "sets": [
+        {"edge": "bar", "repetitions": 8, "weight_kg": 0, "locktime": "3s", "timeoff": "100s", "locktype": "full"}
+      ]
+    },
+ {
+      "type": "bicep_curls",
+      "executed": true,
+      "order": 3,
+      "sets": [
+        {"weight_lb": 15, "timeoff": "90s", "reps": 10},
+        {"weight_lb": 15, "timeoff": "90s", "reps": 10},
+        {"weight_lb": 15, "timeoff": "90s", "reps": 10},
+        {"weight_lb": 15, "timeoff": "90s", "reps": 10}
+      ]
+}
+  ]
+}

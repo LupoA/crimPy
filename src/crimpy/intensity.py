@@ -20,11 +20,20 @@ def time_str_to_seconds(time_str):
 
 
 class WorkoutIntensityCalculator:
-    def __init__(self, workout_data):
+    """
+    Each exercise has a scaling factor to adjust the perceived effort. Exercises with features that are hard to measure (project grade, effort, ...) have a lower scaling factor
+    in order to minimise the effect of these on the overall intensity.
+    Each exercise has certain measurable quantity (reps, weight, ...) These are divided by a reference value and then summed with weights that sum to 1.
+    In this way, if an excerises hits all its reference values, it will contribute to the intensity with a factor of one.
+    The intensity is also very weakly depending on the rest between sets, through a logarithmic function.
+    """
+    def __init__(self, workout_data, source_file=None, date=None):
         """
         workout_data: dict loaded from a workout JSON.
         """
         self.data = workout_data
+        self.source_file = source_file
+        self.date = date
 
     def calculate_intensity(self):
         """
@@ -76,39 +85,48 @@ class WorkoutIntensityCalculator:
         """
         For fingerboard sets, we propose:
 
-          intensity_set = (reps * timeon) / (timeoff + 0.5 * rest) * (1 / edge)
+          intensity_set = [(timeon/timeon0)*0.2 + (timeoff0/timeoff)*0.1 + (edge0*edge)*0.4 + (reps/reps0)*0.3] * log(e - 1 + rest[s]/300s)
 
+        xxx0 being your reference numbers, and the
+        xxx_weights are supposed to sum to 1
         Then we sum over all sets and multiply by a scaling constant.
         """
         intensity = 0.0
-        K_fb = 0.8  # scaling constant
+        K_fb = 0.05  # scaling constant
         for s in exercise.get("sets", []):
             edge_val = self.extract_edge_value(s.get("edge", ""))
-            edge_factor = 1.0 / np.sqrt(edge_val) if edge_val and edge_val != 0 else 1.0
+            edge_ref = 35.0  # reference edge in mm
+            alpha = 1.5  # exponent > 1 for convex reward
+
+            edge_factor = (edge_ref / edge_val) ** alpha if edge_val and edge_val != 0 else 1.0
+
             reps = s.get("reps", 0)
             timeon = time_str_to_seconds(s.get("timeon", "0s"))
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
             rest = time_str_to_seconds(s.get("rest", "0s"))
 
             intensity_set = (timeon/7)*0.2 + (3/timeoff)*0.1 + (35*edge_factor)*0.4 + (reps/6)*0.3
-            intensity_set /= np.log(np.e - 1 + rest/60)
-            #print(edge_val, reps, timeon, timeoff, rest)
-            #print("total, intensity_set, reps*timeone, denom, edge_fact ", K_fb * intensity, intensity_set, reps*timeon, denom, edge_factor)
+            rest_factor = 1.8*np.log(np.e - 1 + rest/1800)
+            print("Fingerboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : "
+                  f"{(timeon / 7) * 0.2:.2f}, {(3 / timeoff) * 0.1:.2f}, {(35 * edge_factor) * 0.4:.2f}, {(reps / 6) * 0.3:.2f}, {rest_factor:.2f}")
+            intensity_set /= rest_factor
             intensity += intensity_set
-        return K_fb * intensity
+        return K_fb * intensity / 10 # all are divided by 10 so that the typical intensity is O(1)
 
     def campusboard_intensity(self, exercise):
         """
         For campus board, we consider:
 
-          intensity_set = (span * num_steps) / timeoff * (1 / edge)
+          intensity_set = intensity_set = [(span/span0)*span_weight + (num_steps/num_steps0)*nsteps_weight + edge0/edge] * log(e - 1 + rest[s]/300s)
+          xxx0 being your reference numbers, and the
+          xxx_weights are supposed to sum to 1
 
         where:
           - span = (max(steps) - min(steps))
           - num_steps = number of moves in the "steps" string.
         """
         intensity = 0.0
-        K_cb = 0.9  # scaling constant
+        K_cb = 0.5  # scaling constant
         for s in exercise.get("sets", []):
             edge_val = self.extract_edge_value(s.get("edge", ""))
             edge_factor = 1.0 / edge_val if edge_val and edge_val != 0 else 1/35
@@ -122,19 +140,25 @@ class WorkoutIntensityCalculator:
             num_steps = len(steps)
             span = max(steps) - min(steps)
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
-            intensity_set = (span/4)*0.25 + ((num_steps/5)*0.35) + (35*edge_factor)*0.4
-            intensity_set /= np.log(np.e- 1 + timeoff/90)
+            intensity_set = (span/3)*0.25 + ((num_steps/6)*0.35) + (35*edge_factor)*0.4
+            rest_factor = np.log(np.e- 1 + timeoff/1200) / 0.6
+            intensity_set /= rest_factor
             intensity += intensity_set
-        return K_cb * intensity
+
+            print("Campusboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : edge contrib: {(35*edge_factor)*0.4:.2f}, steps contrib : {((num_steps/6)*0.35):.2f}, span contrib {(span/3)*0.25:.2f}, rest factor {rest_factor:2f}")
+
+        return K_cb * intensity / 10
 
     def pullup_intensity(self, exercise):
         """
         For pullups, we propose:
 
-          intensity_set = (repetitions * (1 + weight/10)) / (timeoff + 1)
+          intensity_set = [(reps/reps0)*reps_weight + (weight/weight0)*weight_weight] * log(e - 1 + rest[s]/300s)
+          reps0, weight0 being your reference numbers, and the
+          xxx_weights are supposed to sum to 1
         """
         intensity = 0.0
-        K_pu = 2  # scaling constant
+        K_pu = 1.5  # scaling constant
         for s in exercise.get("sets", []):
             reps = s.get("repetitions", 0)
             if "weight_kg" in s:
@@ -147,20 +171,22 @@ class WorkoutIntensityCalculator:
             intensity_set = (reps/8)*0.5 + (weight/10)*0.5
             intensity_set /= np.log(np.e - 1 + timeoff / 180)
             intensity += intensity_set
-        return K_pu * intensity
+        return K_pu * intensity / 10
 
     def project_intensity(self, exercise):
         """
         For project exercises, we propose:
 
-          intensity_set = attempts / (timeoff + 1)
+          intensity_set = attempts * log(e - 1 + rest[s]/300s)
         """
         intensity = 0.0
-        K_proj = 1  # scaling constant
+        K_proj = 0.4  # scaling constant is quite small.
+                      # Project intensity is very dependent on the grade and the effort put,
+                      # which is not being measured
         for s in exercise.get("sets", []):
             attempts = s.get("attempts", 0)
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
             intensity_set = attempts
             intensity_set /= np.log(np.e - 1 + timeoff / 300)
             intensity += intensity_set
-        return K_proj * intensity
+        return K_proj * intensity / 10

@@ -37,10 +37,10 @@
       "executed": true,
       "order": 3,
       "sets": [
-        {"attempts": 5, "timeoff": "300s", "success": true},
+        {"attempts": 5, "timeoff": "300s", "success": true, "grade": "v6"},
 {"attempts": 4, "timeoff": "300s", "success": false},
-{"attempts": 2, "timeoff": "300s", "success": true, "grade": "v5"},
-{"attempts": 3, "timeoff": "300s", "success": true, "grade": "v5"}
+{"attempts": 2, "timeoff": "300s", "success": true},
+{"attempts": 3, "timeoff": "300s", "success": true}
       ]
     }
   ]
