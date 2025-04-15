@@ -19,6 +19,26 @@ proj_grades = []  # to store label per workout
 
 
 json_files = glob.glob(os.path.join(data_dir, "*.json"))
+
+# Collect dates of outdoor climbing sessions (files with "climbs")
+outdoor_sessions = []  # list of (date_obj, name)
+
+for file_path in json_files:
+    with open(file_path, "r") as f:
+        try:
+            data = json.load(f)
+        except:
+            continue
+    if "climbs" in data:
+        workout_date = data.get("date")
+        try:
+            date_obj = datetime.strptime(workout_date, "%d-%m-%Y").date()
+            name = data.get("name", "Outdoor")  # fallback name
+            outdoor_sessions.append((date_obj, name))
+        except:
+            continue
+
+# Collect dates from workouts
 for file_path in json_files:
     with open(file_path, "r") as f:
         try:
@@ -26,6 +46,11 @@ for file_path in json_files:
         except Exception as e:
             print(f"Error reading {file_path}: {e}")
             continue
+
+    # Skip files that are for outdoor climbs
+    if "exercises" not in data:
+        continue
+
     workout_date = data.get("date")
     try:
         date_obj = datetime.strptime(workout_date, "%d-%m-%Y")
@@ -100,12 +125,36 @@ for i, (xi, proj, label) in enumerate(zip(x, proj_intensity, proj_grades)):
 # Plot the total intensity as a continuous line over the stacked bars.
 ax.plot(x, total_intensity, color="black", marker="o", linestyle="-", linewidth=2, label="Total Intensity")
 
+# Plot lines to mark outdoor sections
+for dt, name in outdoor_sessions:
+    xi = (datetime.combine(dt, datetime.min.time()) - start_date).days
+
+    print(f"Outdoor session at x={xi}, date={dt}, name={name}")
+    ax.axvline(x=xi, color="gray", linestyle="--", linewidth=1.5, alpha=0.9, zorder=10)
+    ax.text(
+        xi, max(total_intensity)*0.9,
+        name,
+        ha="right", va="bottom",
+        fontsize=10, color="gray", rotation=0
+    )
+
+
+
 # Format the x-axis.
 ax.set_xticks(x)
 ax.set_xlabel("Days")
 ax.set_ylabel("Intensity")
 ax.set_title(" ")
-ax.legend(title="Exercise Type", loc="upper left", bbox_to_anchor=(1, 1))
+
+from matplotlib.lines import Line2D
+# Custom legend entry for outdoor sessions
+outdoor_legend = Line2D([0], [0], color="gray", linestyle="--", linewidth=1.0, label="Outdoor session")
+handles, labels = ax.get_legend_handles_labels()
+handles.append(outdoor_legend)
+labels.append("Outdoor session")
+ax.legend(handles, labels, title="Exercise Type", loc="upper left", bbox_to_anchor=(1, 1))
+
+
 plt.grid(alpha=0.3)
 plt.tight_layout()
 plt.show()

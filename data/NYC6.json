@@ -17,7 +17,7 @@
       "executed": true,
       "order": 2,
       "sets": [
-        {"edge": "20mm", "steps": "1-2-4-5-6", "timeoff": "90s", "sides": "R"},
+        {"edge": "22mm", "steps": "1-2-4-5-6", "timeoff": "90s", "sides": "R"},
 {"edge": "22mm", "steps": "1-2-4-5-6", "timeoff": "90s", "sides": "L"},
 {"edge": "22mm", "steps": "1-2-4-5-6", "timeoff": "90s", "sides": "R"},
 {"edge": "22mm", "steps": "1-2-4-5-6", "timeoff": "90s", "sides": "L"},

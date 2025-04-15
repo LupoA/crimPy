@@ -24,6 +24,11 @@ for file_path in json_files:
         except Exception as e:
             print(f"Error reading {file_path}: {e}")
             continue
+
+    # Skip files that are for outdoor climbs
+    if "exercises" not in data:
+        continue
+
     workout_date = data.get("date")
     try:
         date_obj = datetime.strptime(workout_date, "%d-%m-%Y")
