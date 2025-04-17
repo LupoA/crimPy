@@ -131,12 +131,12 @@ for dt, name in outdoor_sessions:
 
     print(f"Outdoor session at x={xi}, date={dt}, name={name}")
     ax.axvline(x=xi, color="gray", linestyle="--", linewidth=1.5, alpha=0.9, zorder=10)
-    ax.text(
-        xi, max(total_intensity)*0.9,
-        name,
-        ha="right", va="bottom",
-        fontsize=10, color="gray", rotation=0
-    )
+    #ax.text(
+    #    xi, max(total_intensity)*0.9,
+    #    name,
+    #    ha="right", va="bottom",
+    #    fontsize=10, color="gray", rotation=0
+    #)
 
 
 

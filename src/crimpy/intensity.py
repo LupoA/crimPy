@@ -92,7 +92,7 @@ class WorkoutIntensityCalculator:
         Then we sum over all sets and multiply by a scaling constant.
         """
         intensity = 0.0
-        K_fb = 0.05  # scaling constant
+        K_fb = 0.03  # scaling constant
         for s in exercise.get("sets", []):
             edge_val = self.extract_edge_value(s.get("edge", ""))
             edge_ref = 35.0  # reference edge in mm
@@ -104,7 +104,6 @@ class WorkoutIntensityCalculator:
             timeon = time_str_to_seconds(s.get("timeon", "0s"))
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
             rest = time_str_to_seconds(s.get("rest", "0s"))
-
             intensity_set = (timeon/7)*0.2 + (3/timeoff)*0.1 + (35*edge_factor)*0.4 + (reps/6)*0.3
             rest_factor = 1.8*np.log(np.e - 1 + rest/1800)
             print("Fingerboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : "
@@ -126,7 +125,16 @@ class WorkoutIntensityCalculator:
           - num_steps = number of moves in the "steps" string.
         """
         intensity = 0.0
-        K_cb = 0.5  # scaling constant
+        K_cb = 0.25  # scaling constant
+
+        # reference values
+        ref_span = 3.0
+        ref_steps = 6.0
+        # weights
+        w_span = 0.25
+        w_step = 0.35
+        w_edge = 0.40
+
         for s in exercise.get("sets", []):
             edge_val = self.extract_edge_value(s.get("edge", ""))
             edge_factor = 1.0 / edge_val if edge_val and edge_val != 0 else 1/35
@@ -140,7 +148,16 @@ class WorkoutIntensityCalculator:
             num_steps = len(steps)
             span = max(steps) - min(steps)
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
-            intensity_set = (span/3)*0.25 + ((num_steps/6)*0.35) + (35*edge_factor)*0.4
+
+            span_norm = span / ref_span
+            step_norm = (span / num_steps) / (ref_span / ref_steps)
+
+            edge_term = (35 * edge_factor) * w_edge
+            span_term = span_norm * w_span
+            step_term = step_norm * w_step
+
+            intensity_set = span_term + step_term + edge_term
+
             rest_factor = np.log(np.e- 1 + timeoff/1200) / 0.6
             intensity_set /= rest_factor
             intensity += intensity_set
@@ -158,7 +175,7 @@ class WorkoutIntensityCalculator:
           xxx_weights are supposed to sum to 1
         """
         intensity = 0.0
-        K_pu = 1.5  # scaling constant
+        K_pu = 0.9  # scaling constant
         for s in exercise.get("sets", []):
             reps = s.get("repetitions", 0)
             if "weight_kg" in s:
@@ -180,7 +197,7 @@ class WorkoutIntensityCalculator:
           intensity_set = attempts * log(e - 1 + rest[s]/300s)
         """
         intensity = 0.0
-        K_proj = 0.4  # scaling constant is quite small.
+        K_proj = 0.45  # scaling constant is quite small.
                       # Project intensity is very dependent on the grade and the effort put,
                       # which is not being measured
         for s in exercise.get("sets", []):
