@@ -66,6 +66,7 @@ class WorkoutIntensityCalculator:
                 breakdown["pullup"] += self.pullup_intensity(exercise)
             elif ex_type == "project":
                 breakdown["project"] += self.project_intensity(exercise)
+        breakdown["outdoor"] = self.outdoor_intensity()
         return breakdown
 
     def extract_edge_value(self, edge_str):
@@ -207,3 +208,50 @@ class WorkoutIntensityCalculator:
             intensity_set /= np.log(np.e - 1 + timeoff / 300)
             intensity += intensity_set
         return K_proj * intensity / 10
+
+    def outdoor_intensity(self):
+        """
+        Manually score each outdoor climb attempt based on grade, type, and success.
+        Returns a single float (summing all attempts × per‐attempt score).
+        """
+        # Base scores for lead attempts
+        GRADE_SCORES = {
+            "5c":  0.25,
+            "5c+": 0.30,
+            "6a":  0.40,
+            "6a+": 0.45,
+            "6b":  0.50,
+            "6b+": 0.55,
+            "6c":  0.60,
+            "6c+": 0.65,
+            "7a":  0.50,
+            "7a+": 0.55
+        }
+        total = 0.0
+
+        for climb in self.data.get("climbs", []):
+            if not climb.get("executed", False) or climb.get("order", 0) == 0:
+                continue
+
+            typ = climb.get("type", "").lower()
+            # toprope is 0.1 less on every score
+            type_penalty = 0.1 if typ == "toprope" else 0.0
+
+            for s in climb.get("sets", []):
+                grade = s.get("Grade", "").lower()
+                base = GRADE_SCORES.get(grade)
+                if base is None:
+                    # unknown grade → skip
+                    continue
+
+                # subtract for toprope
+                score = base - type_penalty
+                # subtract if not successful
+                if not s.get("success", False):
+                    score -= 0.1
+
+                # each attempt gets that score
+                attempts = s.get("attempts", 1)
+                total += max(score, 0) * attempts
+
+        return total
