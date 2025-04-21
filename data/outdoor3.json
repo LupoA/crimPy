@@ -1,0 +1,24 @@
+{
+  "date": "20-04-2025",
+  "name": "Lèbre",
+  "climbs": [
+    {
+      "type": "lead",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"Grade": "5c", "attempts": 1, "success": true, "redpoint": true, "flash": true},
+        {"Grade": "5c", "attempts": 1, "success": true, "redpoint": true, "flash": true},
+        {"Grade": "6a", "attempts": 1, "success": true, "redpoint": true, "flash": true}
+      ]
+    },
+      {
+      "type": "toprope",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"Grade": "7a", "attempts": 1, "success": true}
+      ]
+    }
+  ]
+}

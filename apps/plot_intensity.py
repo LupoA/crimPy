@@ -1,159 +1,125 @@
+# apps/plot_intensity.py
+
 import os
 import json
 import glob
 from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 from crimpy.intensity import WorkoutIntensityCalculator
 
-# Define the directory containing JSON workout files.
-data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
-
-dates = []
-fb_intensity = []  # Fingerboard
-cb_intensity = []  # Campusboard
-pu_intensity = []  # Pullup
-proj_intensity = []  # Project
-proj_grades = []  # to store label per workout
-
-
+# 1) Load all JSON files
+data_dir   = os.path.join(os.path.dirname(__file__), "..", "data")
 json_files = glob.glob(os.path.join(data_dir, "*.json"))
 
-# Collect dates of outdoor climbing sessions (files with "climbs")
-outdoor_sessions = []  # list of (date_obj, name)
-
-for file_path in json_files:
-    with open(file_path, "r") as f:
+# 2) Build a list of all sessions (date_obj, data_dict, is_outdoor)
+sessions = []
+for path in json_files:
+    with open(path) as f:
         try:
-            data = json.load(f)
+            d = json.load(f)
         except:
             continue
-    if "climbs" in data:
-        workout_date = data.get("date")
-        try:
-            date_obj = datetime.strptime(workout_date, "%d-%m-%Y").date()
-            name = data.get("name", "Outdoor")  # fallback name
-            outdoor_sessions.append((date_obj, name))
-        except:
-            continue
-
-# Collect dates from workouts
-for file_path in json_files:
-    with open(file_path, "r") as f:
-        try:
-            data = json.load(f)
-        except Exception as e:
-            print(f"Error reading {file_path}: {e}")
-            continue
-
-    # Skip files that are for outdoor climbs
-    if "exercises" not in data:
+    date_str = d.get("date")
+    if not date_str:
         continue
-
-    workout_date = data.get("date")
     try:
-        date_obj = datetime.strptime(workout_date, "%d-%m-%Y")
-    except Exception as e:
+        dt = datetime.strptime(date_str, "%d-%m-%Y").date()
+    except:
         continue
 
-    calc = WorkoutIntensityCalculator(data, source_file=os.path.basename(file_path), date=workout_date)
-    breakdown = calc.calculate_intensity_breakdown()
+    is_out = "climbs" in d and "exercises" not in d
+    sessions.append((dt, d, is_out))
 
-    grade_label = None
-    for exercise in data.get("exercises", []):
-        if exercise.get("type", "").lower() == "project":
-            for s in exercise.get("sets", []):
-                if s.get("success") and "grade" in s:
-                    grade_label = s["grade"]
-                    break  # take the first successful grade only
-            break
-    proj_grades.append(grade_label)
+# 3) Extract workout dates to define the x‐axis zero
+workout_dates = sorted({dt for dt, d, is_out in sessions if not is_out})
+if not workout_dates:
+    raise RuntimeError("No workout sessions found.")
+start_date = workout_dates[0]
 
-    dates.append(date_obj)
-    fb_intensity.append(breakdown.get("fingerboard", 0))
-    cb_intensity.append(breakdown.get("campusboard", 0))
-    pu_intensity.append(breakdown.get("pullup", 0))
-    proj_intensity.append(breakdown.get("project", 0))
+# 4) Sort *all* sessions by date
+sessions.sort(key=lambda x: x[0])
 
-# Sort workouts by date.
-sorted_data = sorted(zip(dates, fb_intensity, cb_intensity, pu_intensity, proj_intensity, proj_grades),
-                     key=lambda x: x[0])
-dates, fb_intensity, cb_intensity, pu_intensity, proj_intensity, proj_grades = zip(*sorted_data)
-# Compute days elapsed since the first workout.
-start_date = dates[0]
-days_elapsed = [(dt - start_date).days for dt in dates]
-x = np.array(days_elapsed)
+# 5) Prepare arrays for plotting
+all_dates = [dt for dt, _, _ in sessions]
+x_all     = np.array([(dt - start_date).days for dt in all_dates])
 
-# Compute total intensity for each workout.
-total_intensity = np.array(fb_intensity) + np.array(cb_intensity) + np.array(pu_intensity) + np.array(proj_intensity)
+# Containers
+fb_arr    = []
+cb_arr    = []
+pu_arr    = []
+proj_arr  = []
+total_arr = []
 
-# Define colors for each exercise type.
+for dt, d, is_out in sessions:
+    br = WorkoutIntensityCalculator(d).calculate_intensity_breakdown()
+    fb    = br.get("fingerboard", 0.0)
+    cb    = br.get("campusboard", 0.0)
+    pu    = br.get("pullup",     0.0)
+    proj  = br.get("project",    0.0)
+    out_v = br.get("outdoor",    0.0)
+
+    # if this was an outdoor‐only session, we want zero bars
+    if is_out:
+        fb, cb, pu, proj = 0.0, 0.0, 0.0, 0.0
+
+    fb_arr.append(fb)
+    cb_arr.append(cb)
+    pu_arr.append(pu)
+    proj_arr.append(proj)
+    total_arr.append(fb + cb + pu + proj + out_v)
+
+fb_arr   = np.array(fb_arr)
+cb_arr   = np.array(cb_arr)
+pu_arr   = np.array(pu_arr)
+proj_arr = np.array(proj_arr)
+total_arr= np.array(total_arr)
+
+# 6) Plot
 colors = {
-    "fingerboard": "#e41a1c",  # red
-    "campusboard": "#377eb8",  # blue
-    "pullup": "#4daf4a",       # green
-    "project": "#984ea3"       # purple
+    "fingerboard": "#e41a1c",
+    "campusboard": "#377eb8",
+    "pullup":      "#4daf4a",
+    "project":     "#984ea3",
 }
 
-# Prepare stacked data.
-bottom = np.zeros(len(x))
-fig, ax = plt.subplots(figsize=(12, 7))
+fig, ax = plt.subplots(figsize=(12,7))
+bottom = np.zeros_like(x_all, dtype=float)
 
-ax.bar(x, fb_intensity, bottom=bottom, color=colors["fingerboard"], label="Fingerboard")
-bottom += np.array(fb_intensity)
+# indoor stacked bars
+ax.bar(x_all, fb_arr,   bottom=bottom, color=colors["fingerboard"], label="Fingerboard")
+bottom += fb_arr
+ax.bar(x_all, cb_arr,   bottom=bottom, color=colors["campusboard"], label="Campusboard")
+bottom += cb_arr
+ax.bar(x_all, pu_arr,   bottom=bottom, color=colors["pullup"],     label="Pullup")
+bottom += pu_arr
+ax.bar(x_all, proj_arr, bottom=bottom, color=colors["project"],    label="Project")
+bottom += proj_arr
 
-ax.bar(x, cb_intensity, bottom=bottom, color=colors["campusboard"], label="Campusboard")
-bottom += np.array(cb_intensity)
+# continuous total line through all points
+ax.plot(x_all, total_arr,
+        color="black", marker="o", linestyle="-", linewidth=2,
+        label="Total Intensity")
 
-ax.bar(x, pu_intensity, bottom=bottom, color=colors["pullup"], label="Pullup")
-bottom += np.array(pu_intensity)
+# vertical dashed lines on pure outdoor days
+for dt, name, is_out in sessions:
+    if is_out:
+        xi = (dt - start_date).days
+        ax.axvline(x=xi, color="gray", linestyle="--", linewidth=1.5, alpha=0.7)
 
-ax.bar(x, proj_intensity, bottom=bottom, color=colors["project"], label="Project")
-bottom += np.array(proj_intensity)
-
-for i, (xi, proj, label) in enumerate(zip(x, proj_intensity, proj_grades)):
-    if label and proj > 0:
-        ax.text(
-            xi, bottom[i] - proj / 2,  # place roughly centered vertically in the bar
-            label,
-            ha="center", va="center",
-            fontsize=12, color="black", fontweight="bold",
-            rotation=0
-        )
-
-# Plot the total intensity as a continuous line over the stacked bars.
-ax.plot(x, total_intensity, color="black", marker="o", linestyle="-", linewidth=2, label="Total Intensity")
-
-# Plot lines to mark outdoor sections
-for dt, name in outdoor_sessions:
-    xi = (datetime.combine(dt, datetime.min.time()) - start_date).days
-
-    print(f"Outdoor session at x={xi}, date={dt}, name={name}")
-    ax.axvline(x=xi, color="gray", linestyle="--", linewidth=1.5, alpha=0.9, zorder=10)
-    #ax.text(
-    #    xi, max(total_intensity)*0.9,
-    #    name,
-    #    ha="right", va="bottom",
-    #    fontsize=10, color="gray", rotation=0
-    #)
-
-
-
-# Format the x-axis.
-ax.set_xticks(x)
+# 7) Styling
+ax.set_xticks(x_all)
 ax.set_xlabel("Days")
 ax.set_ylabel("Intensity")
-ax.set_title(" ")
+ax.set_title("")  # blank title
 
-from matplotlib.lines import Line2D
-# Custom legend entry for outdoor sessions
-outdoor_legend = Line2D([0], [0], color="gray", linestyle="--", linewidth=1.0, label="Outdoor session")
+# Legend: bars + line + dashed outdoor marker
 handles, labels = ax.get_legend_handles_labels()
-handles.append(outdoor_legend)
-labels.append("Outdoor session")
-ax.legend(handles, labels, title="Exercise Type", loc="upper left", bbox_to_anchor=(1, 1))
-
+dash = Line2D([0],[0], color="gray", linestyle="--", linewidth=1.5, label="Outdoor session")
+handles.append(dash); labels.append("Outdoor session")
+ax.legend(handles, labels, title="Exercise Type", loc="upper left", bbox_to_anchor=(1,1))
 
 plt.grid(alpha=0.3)
 plt.tight_layout()
