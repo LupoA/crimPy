@@ -26,22 +26,6 @@
       ]
     },
     {
-      "type": "sub_project",
-      "executed": false,
-      "order": 0,
-      "sets": [
-        {"attempts": 1, "timeoff": "300s", "success": true}
-      ]
-    },
-    {
-      "type": "6in6",
-      "executed": false,
-      "order": 0,
-      "sets": [
-        {"n_success": 6, "timeoff": "300s"}
-      ]
-    },
-    {
       "type": "campus_boulder",
       "executed": false,
       "order": 0,
@@ -70,7 +54,7 @@
       "executed": false,
       "order": 0,
       "sets": [
-        {"edge": "bar", "weight_kg": 0, "timeon": "120", "timeoff": "60s"},
+        {"edge": "bar", "hands": 1, "weight_kg": 0, "timeon": "7s", "timeoff": "30s"}
       ]
     }
   ]

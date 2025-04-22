@@ -10,11 +10,11 @@ from matplotlib.lines import Line2D
 
 from crimpy.intensity import WorkoutIntensityCalculator
 
-# 1) Load all JSON files
+# Load all JSON files
 data_dir   = os.path.join(os.path.dirname(__file__), "..", "data")
 json_files = glob.glob(os.path.join(data_dir, "*.json"))
 
-# 2) Build a list of all sessions (date_obj, data_dict, is_outdoor)
+# Build a list of all sessions (date_obj, data_dict, is_outdoor)
 sessions = []
 for path in json_files:
     with open(path) as f:
@@ -33,16 +33,16 @@ for path in json_files:
     is_out = "climbs" in d and "exercises" not in d
     sessions.append((dt, d, is_out))
 
-# 3) Extract workout dates to define the x‐axis zero
+# Extract workout dates to define the x‐axis zero
 workout_dates = sorted({dt for dt, d, is_out in sessions if not is_out})
 if not workout_dates:
     raise RuntimeError("No workout sessions found.")
 start_date = workout_dates[0]
 
-# 4) Sort *all* sessions by date
+# Sort *all* sessions by date
 sessions.sort(key=lambda x: x[0])
 
-# 5) Prepare arrays for plotting
+# Prepare arrays for plotting
 all_dates = [dt for dt, _, _ in sessions]
 x_all     = np.array([(dt - start_date).days for dt in all_dates])
 
@@ -51,6 +51,8 @@ fb_arr    = []
 cb_arr    = []
 pu_arr    = []
 proj_arr  = []
+dh_arr = []
+
 total_arr = []
 
 for dt, d, is_out in sessions:
@@ -59,38 +61,44 @@ for dt, d, is_out in sessions:
     cb    = br.get("campusboard", 0.0)
     pu    = br.get("pullup",     0.0)
     proj  = br.get("project",    0.0)
+    dh    = br.get("deadhang",   0.0)  # ← new
     out_v = br.get("outdoor",    0.0)
 
     # if this was an outdoor‐only session, we want zero bars
     if is_out:
-        fb, cb, pu, proj = 0.0, 0.0, 0.0, 0.0
+        fb, cb, pu, proj, dh = 0.0, 0.0, 0.0, 0.0, 0.0
 
     fb_arr.append(fb)
     cb_arr.append(cb)
     pu_arr.append(pu)
     proj_arr.append(proj)
-    total_arr.append(fb + cb + pu + proj + out_v)
+    dh_arr.append(dh)
+    total_arr.append(fb + cb + pu + proj + dh + out_v)
 
 fb_arr   = np.array(fb_arr)
 cb_arr   = np.array(cb_arr)
 pu_arr   = np.array(pu_arr)
 proj_arr = np.array(proj_arr)
+dh_arr = np.array(dh_arr)
 total_arr= np.array(total_arr)
 
-# 6) Plot
+# Plot:
 colors = {
     "fingerboard": "#e41a1c",
     "campusboard": "#377eb8",
     "pullup":      "#4daf4a",
     "project":     "#984ea3",
+    "deadhang":    "#ff7f00",
 }
 
 fig, ax = plt.subplots(figsize=(12,7))
 bottom = np.zeros_like(x_all, dtype=float)
 
-# indoor stacked bars
+# indoor session's stacked bars
 ax.bar(x_all, fb_arr,   bottom=bottom, color=colors["fingerboard"], label="Fingerboard")
 bottom += fb_arr
+ax.bar(x_all, dh_arr, bottom=bottom, color=colors["deadhang"], label="Deadhang")
+bottom += dh_arr
 ax.bar(x_all, cb_arr,   bottom=bottom, color=colors["campusboard"], label="Campusboard")
 bottom += cb_arr
 ax.bar(x_all, pu_arr,   bottom=bottom, color=colors["pullup"],     label="Pullup")
@@ -109,7 +117,7 @@ for dt, name, is_out in sessions:
         xi = (dt - start_date).days
         ax.axvline(x=xi, color="gray", linestyle="--", linewidth=1.5, alpha=0.7)
 
-# 7) Styling
+# xy axis
 ax.set_xticks(x_all)
 ax.set_xlabel("Days")
 ax.set_ylabel("Intensity")
@@ -123,4 +131,5 @@ ax.legend(handles, labels, title="Exercise Type", loc="upper left", bbox_to_anch
 
 plt.grid(alpha=0.3)
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(os.path.dirname(__file__), "..", "plots", "Intensity.png"))
+#plt.show()

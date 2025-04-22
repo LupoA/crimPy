@@ -15,11 +15,18 @@ Excercises supported:
 - Pullup
 - Fingerboard
 - Projects
+- Deadhang
 
 Examples of plots produced:
 -
 
 
-![examplePlotIntensity.png](examplePlotIntensity.png)
+![intensity.png](plots/Intensity.png)
 
-![pullUpExamples.png](pullUpExamples.png)
+![weekly_avg_intensity.png](plots/weekly_avg_intensity.png)
+
+![pullups_progression.png](plots/pullups_progression.png)
+
+![fingerboard_progression.png](plots/fingerboard_progression.png)
+
+![campusboard_progression.png](plots/campusboard_progression.png)

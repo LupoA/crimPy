@@ -52,6 +52,7 @@ class WorkoutIntensityCalculator:
             "campusboard": 0.0,
             "pullup": 0.0,
             "project": 0.0,
+            "deadhang": 0.0,
         }
         for exercise in self.data.get("exercises", []):
             # Only consider executed exercises with nonzero order.
@@ -66,6 +67,8 @@ class WorkoutIntensityCalculator:
                 breakdown["pullup"] += self.pullup_intensity(exercise)
             elif ex_type == "project":
                 breakdown["project"] += self.project_intensity(exercise)
+            elif ex_type == "deadhang":
+                breakdown["deadhang"] += self.deadhang_intensity(exercise)
         breakdown["outdoor"] = self.outdoor_intensity()
         return breakdown
 
@@ -107,8 +110,7 @@ class WorkoutIntensityCalculator:
             rest = time_str_to_seconds(s.get("rest", "0s"))
             intensity_set = (timeon/7)*0.2 + (3/timeoff)*0.1 + (35*edge_factor)*0.4 + (reps/6)*0.3
             rest_factor = 1.8*np.log(np.e - 1 + rest/1800)
-            print("Fingerboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : "
-                  f"{(timeon / 7) * 0.2:.2f}, {(3 / timeoff) * 0.1:.2f}, {(35 * edge_factor) * 0.4:.2f}, {(reps / 6) * 0.3:.2f}, {rest_factor:.2f}")
+            #print("Fingerboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : "f"{(timeon / 7) * 0.2:.2f}, {(3 / timeoff) * 0.1:.2f}, {(35 * edge_factor) * 0.4:.2f}, {(reps / 6) * 0.3:.2f}, {rest_factor:.2f}")
             intensity_set /= rest_factor
             intensity += intensity_set
         return K_fb * intensity / 10 # all are divided by 10 so that the typical intensity is O(1)
@@ -163,8 +165,8 @@ class WorkoutIntensityCalculator:
             intensity_set /= rest_factor
             intensity += intensity_set
 
-            print("Campusboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : edge contrib: {(35*edge_factor)*0.4:.2f}, steps contrib : {((num_steps/6)*0.35):.2f}, span contrib {(span/3)*0.25:.2f}, rest factor {rest_factor:2f}")
-
+            #print("Campusboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : edge contrib: {(35*edge_factor)*0.4:.2f}, steps contrib : {((num_steps/6)*0.35):.2f}, span contrib {(span/3)*0.25:.2f}, rest factor {rest_factor:2f}")
+        #print("Campusboard ::: Intensity contribution ",  K_cb * intensity / 10, f" [{self.source_file} | {self.date}]")
         return K_cb * intensity / 10
 
     def pullup_intensity(self, exercise):
@@ -242,6 +244,7 @@ class WorkoutIntensityCalculator:
                 base = GRADE_SCORES.get(grade)
                 if base is None:
                     # unknown grade → skip
+                    print("Unkown grade, skipping")
                     continue
 
                 # subtract for toprope
@@ -254,4 +257,49 @@ class WorkoutIntensityCalculator:
                 attempts = s.get("attempts", 1)
                 total += max(score, 0) * attempts
 
+        return total
+    def deadhang_intensity(self, exercise):
+        """
+        Compute intensity for deadhang sets.
+
+        Reference values:
+          - edge_ref   = 25 mm
+          - time_ref   = 7 s
+        Weights (sum to 1.0):
+          w_edge   = 0.6
+          w_time   = 0.3
+          w_weight = 0.1
+
+        Two‑hand hangs register at 50% intensity of a one‑hand hang.
+        """
+        edge_ref   = 25.0
+        time_ref   = 7.0
+        weight_ref = 10
+        w_edge, w_time, w_weight = 0.5, 0.2, 0.3
+        total = 0.0
+        K_dh = 0.03
+
+        for s in exercise.get("sets", []):
+            # 1) Edge term (smaller = harder)
+            edge_val    = self.extract_edge_value(s.get("edge","")) or edge_ref
+            edge_term   = (edge_ref / edge_val) * w_edge
+
+            # 2) Time‑on term
+            ton         = time_str_to_seconds(s.get("timeon","0s"))
+            time_term   = (ton / time_ref) * w_time
+
+            # 3) Weight term
+            weight      = float(s.get("weight_kg", 0))
+            weight_term = (weight / (weight_ref)) * w_weight
+
+            # 4) Validate hands
+            hands = s.get("hands", 1)
+            if hands not in (1, 2):
+                raise ValueError(f"Invalid number of hands in deadhang set: {hands}. Must be 1 or 2.")
+            hand_multiplier = 1.0 if hands == 1 else 0.5
+
+            # 5) Combine
+            set_intensity = hand_multiplier * (edge_term + time_term + weight_term)
+            total += set_intensity
+        total *= K_dh
         return total
