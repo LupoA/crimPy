@@ -3,10 +3,16 @@
 
 Python scripts to analyse and display data from workouts for rock climbing, in order to track progressions and changes of intensity.
 
-Intensity is measured for certain exercises (see below) from empirical formulae which can be found in ```src/crimPy/intensity./py```
+The intensity is meant to measure the overall effort.
+It is computed for certain exercises (see below) from empirical formulae which can be found in ```src/crimPy/intensity./py```
 
-The template file *"workout_template.json"* provided in the project directory can be edited on the phone during a workout,
-and then copied in the data/ directory to be analysed.
+Usage
+-
+The template file ```workout_template.json``` can be edited on the phone during a workout. It can then be moved in the ***data/*** directory.
+
+Run ```./makeplots.sh``` to produce the plots from all JSON files in ***data/***
+
+Installation is standard: run ```pip install .``` in the cloned directory.
 
 Excercises supported:
 -
@@ -14,8 +20,10 @@ Excercises supported:
 - Campus moves
 - Pullup
 - Fingerboard
-- Projects
 - Deadhang
+- Projects (boulder problems at max effort)
+- Free climbs (boulder problems below project level)
+- Lead and top rope routes
 
 Examples of plots produced:
 -
