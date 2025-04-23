@@ -53,6 +53,7 @@ class WorkoutIntensityCalculator:
             "pullup": 0.0,
             "project": 0.0,
             "deadhang": 0.0,
+            "free_climbs": 0.0,
         }
         for exercise in self.data.get("exercises", []):
             # Only consider executed exercises with nonzero order.
@@ -69,6 +70,8 @@ class WorkoutIntensityCalculator:
                 breakdown["project"] += self.project_intensity(exercise)
             elif ex_type == "deadhang":
                 breakdown["deadhang"] += self.deadhang_intensity(exercise)
+            elif ex_type == "free_climbs":
+                breakdown["free_climbs"] += self.free_climbs_intensity(exercise)
         breakdown["outdoor"] = self.outdoor_intensity()
         return breakdown
 
@@ -195,7 +198,7 @@ class WorkoutIntensityCalculator:
 
     def project_intensity(self, exercise):
         """
-        For project exercises, we propose:
+        For project exercises, (boulders at max effort)
 
           intensity_set = attempts * log(e - 1 + rest[s]/300s)
         """
@@ -210,6 +213,28 @@ class WorkoutIntensityCalculator:
             intensity_set /= np.log(np.e - 1 + timeoff / 300)
             intensity += intensity_set
         return K_proj * intensity / 10
+
+    def free_climbs_intensity(self, exercise):
+        """
+        For free_climbs exercises: (below project level)
+
+          intensity_set = number_of_climbs
+          total_intensity = K_free * sum(intensity_set)
+
+        We choose K_free so that 1 free climb ≈ 1/5 of 1 project attempt.
+        Since project gives ~0.045 per attempt at rest=0, we set:
+
+          K_free = 0.045
+        """
+        intensity = 0.0
+        K_free = 0.45 / 5
+
+        for s in exercise.get("sets", []):
+            number = s.get("number", 0)
+            intensity += number
+
+        return K_free * intensity / 10
+
 
     def outdoor_intensity(self):
         """

@@ -1,5 +1,3 @@
-# apps/plot_intensity.py
-
 import os
 import json
 import glob
@@ -51,7 +49,8 @@ fb_arr    = []
 cb_arr    = []
 pu_arr    = []
 proj_arr  = []
-dh_arr = []
+dh_arr    = []
+fc_arr    = []  # free_climbs array
 
 total_arr = []
 
@@ -61,25 +60,28 @@ for dt, d, is_out in sessions:
     cb    = br.get("campusboard", 0.0)
     pu    = br.get("pullup",     0.0)
     proj  = br.get("project",    0.0)
-    dh    = br.get("deadhang",   0.0)  # ← new
+    dh    = br.get("deadhang",   0.0)
+    fc    = br.get("free_climbs", 0.0)  # free climbs intensity
     out_v = br.get("outdoor",    0.0)
 
     # if this was an outdoor‐only session, we want zero bars
     if is_out:
-        fb, cb, pu, proj, dh = 0.0, 0.0, 0.0, 0.0, 0.0
+        fb, cb, pu, proj, dh, fc = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 
     fb_arr.append(fb)
     cb_arr.append(cb)
     pu_arr.append(pu)
     proj_arr.append(proj)
     dh_arr.append(dh)
-    total_arr.append(fb + cb + pu + proj + dh + out_v)
+    fc_arr.append(fc)
+    total_arr.append(fb + cb + pu + proj + dh + fc + out_v)
 
 fb_arr   = np.array(fb_arr)
 cb_arr   = np.array(cb_arr)
 pu_arr   = np.array(pu_arr)
 proj_arr = np.array(proj_arr)
-dh_arr = np.array(dh_arr)
+dh_arr   = np.array(dh_arr)
+fc_arr   = np.array(fc_arr)
 total_arr= np.array(total_arr)
 
 # Plot:
@@ -87,8 +89,9 @@ colors = {
     "fingerboard": "#e41a1c",
     "campusboard": "#377eb8",
     "pullup":      "#4daf4a",
-    "project":     "#984ea3",
+    "project":     "#9370DB",
     "deadhang":    "#ff7f00",
+    "free_climbs": "#9932CC",
 }
 
 fig, ax = plt.subplots(figsize=(12,7))
@@ -97,14 +100,16 @@ bottom = np.zeros_like(x_all, dtype=float)
 # indoor session's stacked bars
 ax.bar(x_all, fb_arr,   bottom=bottom, color=colors["fingerboard"], label="Fingerboard")
 bottom += fb_arr
-ax.bar(x_all, dh_arr, bottom=bottom, color=colors["deadhang"], label="Deadhang")
+ax.bar(x_all, dh_arr,   bottom=bottom, color=colors["deadhang"],    label="Deadhang")
 bottom += dh_arr
 ax.bar(x_all, cb_arr,   bottom=bottom, color=colors["campusboard"], label="Campusboard")
 bottom += cb_arr
 ax.bar(x_all, pu_arr,   bottom=bottom, color=colors["pullup"],     label="Pullup")
 bottom += pu_arr
-ax.bar(x_all, proj_arr, bottom=bottom, color=colors["project"],    label="Project")
+ax.bar(x_all, proj_arr, bottom=bottom, color=colors["project"],    label="Climbs (max effort)")
 bottom += proj_arr
+ax.bar(x_all, fc_arr,   bottom=bottom, color=colors["free_climbs"],label="Climbs (< max effort)")
+bottom += fc_arr
 
 # continuous total line through all points
 ax.plot(x_all, total_arr,

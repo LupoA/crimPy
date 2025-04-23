@@ -47,7 +47,7 @@ for dt, data, is_out in sessions:
     if is_out:
         weekly[week_idx]['outdoor']    += br.get('outdoor',   0.0)
     else:
-        for key in ['fingerboard', 'deadhang', 'campusboard', 'pullup', 'project', 'outdoor']:
+        for key in ['fingerboard', 'deadhang', 'campusboard', 'pullup', 'project', 'outdoor', 'free_climbs']:
             weekly[week_idx][key] += br.get(key, 0.0)
 
 # Sort weeks
@@ -55,7 +55,7 @@ weeks = sorted(weekly.keys())
 x     = np.array(weeks)
 
 # Build arrays per exercise type
-types       = ['fingerboard', 'deadhang', 'campusboard', 'pullup', 'project', 'outdoor']
+types       = ['fingerboard', 'deadhang', 'campusboard', 'pullup', 'project', 'outdoor', 'free_climbs']
 data_arrays = {t: np.array([weekly[w].get(t, 0.0) for w in weeks]) for t in types}
 
 # Total intensity including outdoor-only
@@ -68,14 +68,23 @@ colors = {
     'pullup':      '#186A3B',
     'project':     '#76448A',
     'outdoor':     '#AEB6BF',
-    'deadhang':    '#D35400'
+    'deadhang':    '#D35400',
+    'free_climbs': '#9370DB'
 }
 
 # Plot stacked bars
 fig, ax = plt.subplots(figsize=(12,7))
 bottom = np.zeros_like(x, dtype=float)
 for t in types:
-    ax.bar(x, data_arrays[t], bottom=bottom, color=colors[t], label=t.capitalize())
+    # custom labels for project and free_climbs
+    if t == 'project':
+        lbl = 'Climbs (max effort)'
+    elif t == 'free_climbs':
+        lbl = 'Climbs (< max effort)'
+    else:
+        lbl = t.capitalize()
+
+    ax.bar(x, data_arrays[t], bottom=bottom, color=colors[t], label=lbl)
     bottom += data_arrays[t]
 
 # Continuous total intensity line through all weeks
@@ -83,9 +92,13 @@ ax.plot(x, total_intensity,
         color='black', marker='o', linestyle='-', linewidth=2,
         label='Total Intensity', zorder=10)
 
+# Extend y-axis slightly above the tallest bar
+y_max = max(bottom.max(), total_intensity.max())
+ax.set_ylim(0, y_max * 1.1)
+
 # X-axis formatting
 ax.set_xticks(x)
-ax.set_xlabel("Weeks Since First Workout")
+ax.set_xlabel("# Weeks")
 ax.set_ylabel("Summed Intensity")
 ax.set_title("")  # blank title
 
