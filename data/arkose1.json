@@ -1,0 +1,35 @@
+{
+  "date": "22-04-2025",
+  "exercises": [
+    {
+      "type": "fingerboard",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"edge": "45mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "60s"},
+ {"edge": "15mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "90s"},
+ {"edge": "15mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "90s"}
+      ]
+    },
+    {
+      "type": "free_climbs",
+      "executed": true,
+      "order": 3,
+      "sets": [
+        {"number": 8}
+      ]
+    },
+    {
+      "type": "pullup",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"edge": "bar", "repetitions": 10, "weight_kg": 8, "timeoff": "120s"},
+ {"edge": "bar", "repetitions": 8, "weight_kg": 12, "timeoff": "150s"},
+ {"edge": "bar", "repetitions": 8, "weight_kg": 12, "timeoff": "200s"},
+ {"edge": "bar", "repetitions": 8, "weight_kg": 8, "timeoff": "180s"},
+{"edge": "bar", "repetitions": 8, "weight_kg": 8, "timeoff": "240s"}
+      ]
+    }
+  ]
+}

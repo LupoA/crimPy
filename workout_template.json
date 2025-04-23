@@ -26,11 +26,11 @@
       ]
     },
     {
-      "type": "campus_boulder",
-      "executed": false,
-      "order": 0,
+      "type": "free_climbs",
+      "executed": true,
+      "order": 3,
       "sets": [
-        {"success": true, "timeoff": "300s"}
+        {"number": 8}
       ]
     },
     {
@@ -39,14 +39,6 @@
       "order": 0,
       "sets": [
         {"edge": "bar", "repetitions": 8, "weight_kg": 10, "timeoff": "100s"}
-      ]
-    },
-    {
-      "type": "pullup_lockoff",
-      "executed": false,
-      "order": 0,
-      "sets": [
-        {"edge": "bar", "repetitions": 8, "weight_kg": 0, "locktime": "3s", "timeoff": "100s", "locktype": "full"}
       ]
     },
     {
