@@ -243,6 +243,8 @@ class WorkoutIntensityCalculator:
         """
         # Base scores for lead attempts
         GRADE_SCORES = {
+            "5b": 0.15,
+            "5b+": 0.2,
             "5c":  0.25,
             "5c+": 0.30,
             "6a":  0.40,
@@ -269,7 +271,7 @@ class WorkoutIntensityCalculator:
                 base = GRADE_SCORES.get(grade)
                 if base is None:
                     # unknown grade → skip
-                    print("Unkown grade, skipping")
+                    print("Unkown grade : ", grade, ". Skipping.")
                     continue
 
                 # subtract for toprope
