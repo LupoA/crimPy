@@ -1,6 +1,8 @@
 import re
 import numpy as np
 
+MY_WEIGHT_KG = 63
+
 def time_str_to_seconds(time_str):
     """
     Convert a time string like '7s' or '15m' to seconds.
@@ -99,11 +101,11 @@ class WorkoutIntensityCalculator:
         Then we sum over all sets and multiply by a scaling constant.
         """
         intensity = 0.0
-        K_fb = 0.03  # scaling constant
+        K_fb = 0.0028  # scaling constant
         for s in exercise.get("sets", []):
             edge_val = self.extract_edge_value(s.get("edge", ""))
             edge_ref = 35.0  # reference edge in mm
-            alpha = 1.5  # exponent > 1 for convex reward
+            alpha = 1.2  # exponent > 1 for convex reward
 
             edge_factor = (edge_ref / edge_val) ** alpha if edge_val and edge_val != 0 else 1.0
 
@@ -116,7 +118,7 @@ class WorkoutIntensityCalculator:
             #print("Fingerboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : "f"{(timeon / 7) * 0.2:.2f}, {(3 / timeoff) * 0.1:.2f}, {(35 * edge_factor) * 0.4:.2f}, {(reps / 6) * 0.3:.2f}, {rest_factor:.2f}")
             intensity_set /= rest_factor
             intensity += intensity_set
-        return K_fb * intensity / 10 # all are divided by 10 so that the typical intensity is O(1)
+        return K_fb * intensity
 
     def campusboard_intensity(self, exercise):
         """
@@ -131,7 +133,7 @@ class WorkoutIntensityCalculator:
           - num_steps = number of moves in the "steps" string.
         """
         intensity = 0.0
-        K_cb = 0.25  # scaling constant
+        K_cb = 0.014  # scaling constant
 
         # reference values
         ref_span = 3.0
@@ -140,10 +142,13 @@ class WorkoutIntensityCalculator:
         w_span = 0.25
         w_step = 0.35
         w_edge = 0.40
+        alpha_edge = 2
+        alpha_span = 1.3
+        alpha_step = 1.2
 
         for s in exercise.get("sets", []):
             edge_val = self.extract_edge_value(s.get("edge", ""))
-            edge_factor = 1.0 / edge_val if edge_val and edge_val != 0 else 1/35
+            edge_factor = (1.0 / edge_val) if edge_val and edge_val != 0 else 1/35
             steps_str = s.get("steps", "")
             try:
                 steps = [float(x) for x in steps_str.split("-") if x]
@@ -158,9 +163,9 @@ class WorkoutIntensityCalculator:
             span_norm = span / ref_span
             step_norm = (span / num_steps) / (ref_span / ref_steps)
 
-            edge_term = (35 * edge_factor) * w_edge
-            span_term = span_norm * w_span
-            step_term = step_norm * w_step
+            edge_term = ((35 * edge_factor)**alpha_edge) * w_edge
+            span_term = (span_norm ** alpha_span) * w_span
+            step_term = (step_norm ** alpha_step)* w_step
 
             intensity_set = span_term + step_term + edge_term
 
@@ -168,9 +173,8 @@ class WorkoutIntensityCalculator:
             intensity_set /= rest_factor
             intensity += intensity_set
 
-            #print("Campusboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : edge contrib: {(35*edge_factor)*0.4:.2f}, steps contrib : {((num_steps/6)*0.35):.2f}, span contrib {(span/3)*0.25:.2f}, rest factor {rest_factor:2f}")
         #print("Campusboard ::: Intensity contribution ",  K_cb * intensity / 10, f" [{self.source_file} | {self.date}]")
-        return K_cb * intensity / 10
+        return K_cb * intensity
 
     def pullup_intensity(self, exercise):
         """
@@ -181,7 +185,14 @@ class WorkoutIntensityCalculator:
           xxx_weights are supposed to sum to 1
         """
         intensity = 0.0
-        K_pu = 0.9  # scaling constant
+        K_pu = 0.11  # scaling constant
+
+
+        w_reps = 0.5
+        w_weight = 0.5
+        reps0 = 8
+        weight0 = 14
+        alpha = 1.8
         for s in exercise.get("sets", []):
             reps = s.get("repetitions", 0)
             if "weight_kg" in s:
@@ -190,11 +201,27 @@ class WorkoutIntensityCalculator:
                 weight = float(s["weight_lb"]) * 0.453592
             else:
                 weight = 0.0
+            edge = str(s.get("edge", "")).lower()
+            if edge == "bar":
+                edge_multiplier = 1
+            elif edge == "pinch":
+                edge_multiplier = 1.15
+            elif edge == 'chin-up':
+                edge_multiplier = 0.85
+            else:
+                edge_val = self.extract_edge_value(s.get("edge", ""))
+                edge_multiplier = 35 / edge_val if edge_val else 1
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
-            intensity_set = (reps/8)*0.5 + (weight/10)*0.5
+
+            rep_term = (reps / reps0) * w_reps
+            weight_term = (((weight / weight0))**alpha) * w_weight
+
+            intensity_set = rep_term + weight_term
+
+            intensity_set *= edge_multiplier
             intensity_set /= np.log(np.e - 1 + timeoff / 180)
             intensity += intensity_set
-        return K_pu * intensity / 10
+        return K_pu * intensity
 
     def project_intensity(self, exercise):
         """
@@ -203,7 +230,7 @@ class WorkoutIntensityCalculator:
           intensity_set = attempts * log(e - 1 + rest[s]/300s)
         """
         intensity = 0.0
-        K_proj = 0.45  # scaling constant is quite small.
+        K_proj = 0.026  # scaling constant is quite small.
                       # Project intensity is very dependent on the grade and the effort put,
                       # which is not being measured
         for s in exercise.get("sets", []):
@@ -212,7 +239,7 @@ class WorkoutIntensityCalculator:
             intensity_set = attempts
             intensity_set /= np.log(np.e - 1 + timeoff / 300)
             intensity += intensity_set
-        return K_proj * intensity / 10
+        return K_proj * intensity
 
     def free_climbs_intensity(self, exercise):
         """
@@ -243,18 +270,18 @@ class WorkoutIntensityCalculator:
         """
         # Base scores for lead attempts
         GRADE_SCORES = {
-            "5b": 0.15,
-            "5b+": 0.2,
-            "5c":  0.25,
-            "5c+": 0.30,
-            "6a":  0.40,
-            "6a+": 0.45,
-            "6b":  0.50,
-            "6b+": 0.55,
-            "6c":  0.60,
-            "6c+": 0.65,
-            "7a":  0.50,
-            "7a+": 0.55
+            "5b": 0.1,
+            "5b+": 0.15,
+            "5c":  0.2,
+            "5c+": 0.25,
+            "6a":  0.3,
+            "6a+": 0.35,
+            "6b":  0.40,
+            "6b+": 0.45,
+            "6c":  0.50,
+            "6c+": 0.55,
+            "7a":  0.6,
+            "7a+": 0.65
         }
         total = 0.0
 
@@ -299,12 +326,12 @@ class WorkoutIntensityCalculator:
 
         Two‑hand hangs register at 50% intensity of a one‑hand hang.
         """
-        edge_ref   = 25.0
+        edge_ref   = 35.0
         time_ref   = 7.0
-        weight_ref = 10
+        weight_ref = 6
         w_edge, w_time, w_weight = 0.5, 0.2, 0.3
         total = 0.0
-        K_dh = 0.03
+        K_dh = 0.035
 
         for s in exercise.get("sets", []):
             # 1) Edge term (smaller = harder)

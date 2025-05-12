@@ -1,0 +1,49 @@
+{
+  "date": "11-05-2025",
+  "exercises": [
+    {
+      "type": "fingerboard",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"edge": "20mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "120s"},
+{"edge": "18mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "90s"},
+{"edge": "18mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "120s"},
+{"edge": "18mm", "reps": 6, "timeon": "7s", "timeoff": "3s", "rest": "120s"}
+      ]
+    },
+    {
+      "type": "project",
+      "executed": true,
+      "order": 4,
+      "sets": [
+        {"attempts": 3, "timeoff": "300s", "success": true},
+{"attempts": 1, "timeoff": "300s", "success": true},
+{"attempts": 1, "timeoff": "300s", "success": false}
+      ]
+    },
+    {
+      "type": "pullup",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"edge": "bar", "repetitions": 8, "weight_kg": 12, "timeoff": "240s"},
+{"edge": "bar", "repetitions": 8, "weight_kg": 16, "timeoff": "300s"},
+{"edge": "bar", "repetitions": 8, "weight_kg": 16, "timeoff": "300s"},
+{"edge": "bar", "repetitions": 8, "weight_kg": 16, "timeoff": "300s"}
+      ]
+    },
+     {
+      "type": "deadhang",
+      "executed": true,
+      "order": 3,
+      "sets": [
+        {"edge": "45mm", "hands": 1, "weight_kg": 0, "timeon": "5s", "timeoff": "30s"},
+{"edge": "45mm", "hands": 1, "weight_kg": 0, "timeon": "6s", "timeoff": "60s"},
+{"edge": "45mm", "hands": 1, "weight_kg": 0, "timeon": "6s", "timeoff": "60s"},
+{"edge": "45mm", "hands": 1, "weight_kg": 0, "timeon": "5s", "timeoff": "60s"},
+{"edge": "45mm", "hands": 1, "weight_kg": 0, "timeon": "4s", "timeoff": "60s"}
+      ]
+    }
+  ]
+}

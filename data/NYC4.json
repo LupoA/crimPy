@@ -30,7 +30,7 @@
  {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "240s"},
  {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "240s"},
  {"edge": "bar", "repetitions": 8, "weight_lb": 20, "timeoff": "300s"},
- {"edge": "bar-reverse", "repetitions": 8, "weight_lb": 20, "timeoff": "180s"}
+ {"edge": "chin-up", "repetitions": 8, "weight_lb": 20, "timeoff": "180s"}
       ]
     }
   ]

@@ -19,7 +19,7 @@ Excercises supported:
 
 - Campus moves
 - Pullup
-- Fingerboard
+- Fingerboard (7:3 repeaters)
 - Deadhang
 - Projects (boulder problems at max effort)
 - Free climbs (boulder problems below project level)
