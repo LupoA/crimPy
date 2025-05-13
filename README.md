@@ -38,3 +38,33 @@ Examples of plots produced:
 ![fingerboard_progression.png](plots/fingerboard_progression.png)
 
 ![campusboard_progression.png](plots/campusboard_progression.png)
+
+Example of estimated effort from excercise
+--
+***
+**Fingerboard 7on 3off, six repeaters : Intensity for Edge Sizes**
+```
+Edge:   45 mm -> Intensity: 0.0317
+Edge:   35 mm -> Intensity: 0.0414
+Edge:   25 mm -> Intensity: 0.0595
+Edge:   20 mm -> Intensity: 0.0757
+Edge:   15 mm -> Intensity: 0.1034
+Edge:   10 mm -> Intensity: 0.1609
+Edge:    8 mm -> Intensity: 0.2054
+Edge:    6 mm -> Intensity: 0.2814
+
+```
+***
+**Pullups intensity for 8 reps varying weight**
+
+```
+Weight:  0 → Intensity: 0.0385
+Weight:  8 → Intensity: 0.0620
+Weight: 10 → Intensity: 0.0693
+Weight: 14 → Intensity: 0.0858
+Weight: 18 → Intensity: 0.1051
+Weight: 20 → Intensity: 0.1159
+Weight: 24 → Intensity: 0.1399
+Weight: 32 → Intensity: 0.1989
+
+```
