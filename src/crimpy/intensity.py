@@ -92,20 +92,14 @@ class WorkoutIntensityCalculator:
 
     def fingerboard_intensity(self, exercise):
         """
-        For fingerboard sets, we propose:
-
-          intensity_set = [(timeon/timeon0)*0.2 + (timeoff0/timeoff)*0.1 + (edge0*edge)*0.4 + (reps/reps0)*0.3] * log(e - 1 + rest[s]/300s)
-
-        xxx0 being your reference numbers, and the
-        xxx_weights are supposed to sum to 1
-        Then we sum over all sets and multiply by a scaling constant.
+        todo write description
         """
         intensity = 0.0
-        K_fb = 0.0028  # scaling constant
+        K_fb = 0.0004  # scaling constant
         for s in exercise.get("sets", []):
             edge_val = self.extract_edge_value(s.get("edge", ""))
             edge_ref = 35.0  # reference edge in mm
-            alpha = 1.2  # exponent > 1 for convex reward
+            alpha = 1.1  # exponent > 1 for convex reward
 
             edge_factor = (edge_ref / edge_val) ** alpha if edge_val and edge_val != 0 else 1.0
 
@@ -113,7 +107,8 @@ class WorkoutIntensityCalculator:
             timeon = time_str_to_seconds(s.get("timeon", "0s"))
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
             rest = time_str_to_seconds(s.get("rest", "0s"))
-            intensity_set = (timeon/7)*0.2 + (3/timeoff)*0.1 + (35*edge_factor)*0.4 + (reps/6)*0.3
+            intensity_set = (timeon/7)*0.3 + (3/timeoff)*0.2 + (35*edge_factor)*0.5
+            intensity_set *= reps
             rest_factor = 1.8*np.log(np.e - 1 + rest/1800)
             #print("Fingerboard ::: ", f"[{self.source_file} | {self.date}] edge: {edge_val}, I = {intensity_set:.3f} : "f"{(timeon / 7) * 0.2:.2f}, {(3 / timeoff) * 0.1:.2f}, {(35 * edge_factor) * 0.4:.2f}, {(reps / 6) * 0.3:.2f}, {rest_factor:.2f}")
             intensity_set /= rest_factor
@@ -178,21 +173,12 @@ class WorkoutIntensityCalculator:
 
     def pullup_intensity(self, exercise):
         """
-        For pullups, we propose:
-
-          intensity_set = [(reps/reps0)*reps_weight + (weight/weight0)*weight_weight] * log(e - 1 + rest[s]/300s)
-          reps0, weight0 being your reference numbers, and the
-          xxx_weights are supposed to sum to 1
+        Adjust variable at the top to your own weight
         """
         intensity = 0.0
-        K_pu = 0.11  # scaling constant
+        K_pu = 0.005  # scaling constant
 
-
-        w_reps = 0.5
-        w_weight = 0.5
-        reps0 = 8
-        weight0 = 14
-        alpha = 1.8
+        alpha = 4
         for s in exercise.get("sets", []):
             reps = s.get("repetitions", 0)
             if "weight_kg" in s:
@@ -213,10 +199,10 @@ class WorkoutIntensityCalculator:
                 edge_multiplier = 35 / edge_val if edge_val else 1
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
 
-            rep_term = (reps / reps0) * w_reps
-            weight_term = (((weight / weight0))**alpha) * w_weight
+            weight_term = (MY_WEIGHT_KG + weight) / MY_WEIGHT_KG
+            weight_term = weight_term ** alpha
 
-            intensity_set = rep_term + weight_term
+            intensity_set = weight_term * reps
 
             intensity_set *= edge_multiplier
             intensity_set /= np.log(np.e - 1 + timeoff / 180)
