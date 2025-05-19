@@ -73,7 +73,7 @@ tests = [
     (21, "1-3-5"),
 ]
 
-print("Example: Campusboard intensity")
+'''print("Example: Campusboard intensity")
 print("--------------------------------")
 for edge_mm, steps in tests:
     dummy = {
@@ -91,4 +91,29 @@ for edge_mm, steps in tests:
     }
     calc = WorkoutIntensityCalculator(dummy)
     cb_i = calc.calculate_intensity_breakdown()["campusboard"]
-    print(f"Edge {edge_mm:>2}mm, steps {steps:7} → Intensity: {cb_i:.4f}")
+    print(f"Edge {edge_mm:>2}mm, steps {steps:7} → Intensity: {cb_i:.4f}")'''
+
+
+# --- Project Benchmark ---------------------------------------------
+print("\nExample: Bouldering intensity for single attempts per grade (success vs unsuccessful)")
+print("------------------------------------------------------------------------")
+grades = [f"v{i}" for i in range(1, 8)]
+for grade in grades:
+    for success in [False, True]:
+        dummy = {
+            "exercises": [{
+                "type":     "project",
+                "executed": True,
+                "order":    1,
+                "sets": [{
+                    "attempts": 1,
+                    "timeoff":  "300s",
+                    "grade":    grade,
+                    "success":  success
+                }]
+            }]
+        }
+        calc    = WorkoutIntensityCalculator(dummy)
+        proj_i  = calc.calculate_intensity_breakdown()["project"]
+        status  = "success" if success else "fail"
+        print(f"Grade {grade:>3}, {status:7} -> Intensity: {proj_i:.4f}")

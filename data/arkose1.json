@@ -12,11 +12,18 @@
       ]
     },
     {
-      "type": "free_climbs",
+      "type": "project",
       "executed": true,
       "order": 3,
       "sets": [
-        {"number": 8}
+        {"attempts": 1, "timeoff": "300s", "success": true, "grade": "v4"},
+        {"attempts": 1, "timeoff": "300s", "success": true, "grade": "v4"},
+        {"attempts": 1, "timeoff": "300s", "success": true, "grade": "v4"},
+        {"attempts": 1, "timeoff": "300s", "success": true, "grade": "v4"},
+        {"attempts": 1, "timeoff": "300s", "success": true, "grade": "v4"},
+        {"attempts": 1, "timeoff": "300s", "success": true, "grade": "v4"},
+        {"attempts": 1, "timeoff": "300s", "success": true, "grade": "v4"},
+        {"attempts": 1, "timeoff": "300s", "success": true, "grade": "v4"}
       ]
     },
     {

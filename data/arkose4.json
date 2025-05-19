@@ -26,10 +26,10 @@
       "executed": true,
       "order": 4,
       "sets": [
-        {"attempts": 5, "timeoff": "300s", "success": true},
- {"attempts": 2, "timeoff": "300s", "success": false},
- {"attempts": 1, "timeoff": "300s", "success": false},
- {"attempts": 2, "timeoff": "300s", "success": false}
+        {"attempts": 5, "timeoff": "300s", "success": true, "grade": "v6"},
+ {"attempts": 2, "timeoff": "300s", "success": false, "grade": "v6"},
+ {"attempts": 1, "timeoff": "300s", "success": false, "grade": "v5"},
+ {"attempts": 2, "timeoff": "300s", "success": false, "grade": "v6"}
       ]
     },
     {

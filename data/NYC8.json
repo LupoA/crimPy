@@ -40,9 +40,9 @@
       "executed": true,
       "order": 3,
       "sets": [
-        {"attempts": 6, "timeoff": "300s", "success": false},
-{"attempts": 1, "timeoff": "300s", "success": false},
-{"attempts" :2, "timeoff": "300s", "success": false}
+        {"attempts": 6, "timeoff": "300s", "success": false, "grade": "v7"},
+{"attempts": 1, "timeoff": "300s", "success": false, "grade": "v6"},
+{"attempts" :2, "timeoff": "300s", "success": false, "grade": "v6"}
 
       ]
     },

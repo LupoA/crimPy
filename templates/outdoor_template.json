@@ -1,0 +1,21 @@
+{
+  "date": "DD-MM-YYYY",
+  "climbs": [
+    {
+      "type": "lead",
+      "executed": true,
+      "order": 0,
+      "sets": [
+        {"Grade": "5c", "attempts": 1, "success": true, "redpoint": true, "flash": true}
+      ]
+    },
+      {
+      "type": "toprope",
+      "executed": true,
+      "order": 0,
+      "sets": [
+        {"Grade": "6c", "attempts": 1, "success": true}
+      ]
+    }
+  ]
+}

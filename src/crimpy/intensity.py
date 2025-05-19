@@ -211,93 +211,116 @@ class WorkoutIntensityCalculator:
 
     def project_intensity(self, exercise):
         """
-        For project exercises, (boulders at max effort)
-
-          intensity_set = attempts * log(e - 1 + rest[s]/300s)
+        Project intensity
+          • Successful attempts count at full score (once per attempt).
+          • Failed attempts count at FAILURE_MALUS% of base score.
         """
-        intensity = 0.0
-        K_proj = 0.026  # scaling constant is quite small.
-                      # Project intensity is very dependent on the grade and the effort put,
-                      # which is not being measured
+        grade_score = {
+            "v0": 0.01,
+            "v1": 0.01,
+            "v2": 0.012,
+            "v3": 0.015,
+            "v4": 0.05,
+            "v5": 0.1,
+            "v6": 0.25,
+            "v7": 0.4,
+        }
+        FAILURE_MALUS = 0.1
+        K_proj = 1
+
+        total_intensity = 0.0
+
         for s in exercise.get("sets", []):
+            grade = s.get("grade", "").lower()
             attempts = s.get("attempts", 0)
             timeoff = time_str_to_seconds(s.get("timeoff", "0s"))
-            intensity_set = attempts
-            intensity_set /= np.log(np.e - 1 + timeoff / 300)
-            intensity += intensity_set
-        return K_proj * intensity
+            success = s.get("success", False)
+            assert attempts > 0
+            if grade not in grade_score:
+                raise ValueError(f"Unknown project grade '{grade}' in set {s}")
 
-    def free_climbs_intensity(self, exercise):
-        """
-        For free_climbs exercises: (below project level)
+            base = grade_score[grade]
+            if base == 0 or attempts == 0:
+                continue
 
-          intensity_set = number_of_climbs
-          total_intensity = K_free * sum(intensity_set)
+            # Compute the rest factor once per set
+            rest_factor = np.log(np.e - 1 + timeoff / 300)
+            if rest_factor <= 0:
+                rest_factor = 1.0
 
-        We choose K_free so that 1 free climb ≈ 1/5 of 1 project attempt.
-        Since project gives ~0.045 per attempt at rest=0, we set:
+            # If the set was successful, assume exactly one successful rep:
+            #   - 1 attempt at full base
+            #   - (attempts-1) at malused base
+            if success:
+                full_score = base * 1
+                failed_score = base * FAILURE_MALUS * (attempts - 1)
+                intensity_set = (full_score + failed_score) / rest_factor
 
-          K_free = 0.045
-        """
-        intensity = 0.0
-        K_free = 0.45 / 5
+            # If the set failed, all attempts are malused
+            else:
+                intensity_set = (base * FAILURE_MALUS * attempts) / rest_factor
 
-        for s in exercise.get("sets", []):
-            number = s.get("number", 0)
-            intensity += number
+            total_intensity += intensity_set
 
-        return K_free * intensity / 10
-
+        return K_proj * total_intensity
 
     def outdoor_intensity(self):
         """
-        Manually score each outdoor climb attempt based on grade, type, and success.
-        Returns a single float (summing all attempts × per‐attempt score).
+        • Each attempt adds base_score (full on success, MALUS_FACTOR on failures).
+        • One‐time success bonus of +BONUS_FACTOR * base.
+        • Toprope malus applied to the set total.
         """
-        # Base scores for lead attempts
         GRADE_SCORES = {
-            "5b": 0.1,
-            "5b+": 0.15,
-            "5c":  0.2,
-            "5c+": 0.25,
-            "6a":  0.3,
-            "6a+": 0.35,
-            "6b":  0.40,
-            "6b+": 0.45,
-            "6c":  0.50,
-            "6c+": 0.55,
-            "7a":  0.6,
-            "7a+": 0.65
+            "5b": 0.18, "5b+": 0.18, "5c": 0.2, "5c+": 0.225,
+            "6a": 0.25, "6a+": 0.3, "6b": 0.35, "6b+": 0.4,
+            "6c": 0.5, "6c+": 0.6, "7a": 0.7, "7a+": 0.85,
         }
+        BONUS_FACTOR = 0.10  # +10% once per grade
+        MALUS_FACTOR = 0.5  # failed attempts score 50%
+        TOPOPE_MALUS = 0.2  # −20% on toprope sets
+
         total = 0.0
+        seen_bonus = set()
 
         for climb in self.data.get("climbs", []):
             if not climb.get("executed", False) or climb.get("order", 0) == 0:
                 continue
 
             typ = climb.get("type", "").lower()
-            # toprope is 0.1 less on every score
-            type_penalty = 0.1 if typ == "toprope" else 0.0
+            is_toprope = (typ == "toprope")
 
             for s in climb.get("sets", []):
                 grade = s.get("Grade", "").lower()
-                base = GRADE_SCORES.get(grade)
-                if base is None:
-                    # unknown grade → skip
-                    print("Unkown grade : ", grade, ". Skipping.")
-                    continue
-
-                # subtract for toprope
-                score = base - type_penalty
-                # subtract if not successful
-                if not s.get("success", False):
-                    score -= 0.1
-
-                # each attempt gets that score
                 attempts = s.get("attempts", 1)
-                total += max(score, 0) * attempts
+                success = s.get("success", False)
+
+                if grade not in GRADE_SCORES:
+                    raise ValueError(f"Unknown outdoor grade '{grade}' in set {s}")
+                base = GRADE_SCORES[grade]
+
+                # 1) split full vs. failed attempts
+                if success:
+                    full_count = 1
+                    fail_count = attempts - 1
+                else:
+                    full_count = 0
+                    fail_count = attempts
+
+                score = base * full_count + base * MALUS_FACTOR * fail_count
+
+                # 2) one‐time success bonus
+                if success and grade not in seen_bonus:
+                    score += base * BONUS_FACTOR
+                    seen_bonus.add(grade)
+
+                # 3) toprope malus
+                if is_toprope:
+                    score *= (1.0 - TOPOPE_MALUS)
+
+                total += score
 
         return total
+
     def deadhang_intensity(self, exercise):
         """
         Compute intensity for deadhang sets.

@@ -37,11 +37,11 @@
       "executed": true,
       "order": 3,
       "sets": [
-        {"attempts": 2, "timeoff": "120s", "success": false},
-        {"attempts": 2, "timeoff": "120s", "success": false},
-        {"attempts": 2, "timeoff": "120s", "success": true},
-        {"attempts": 1, "timeoff": "120s", "success": true},
-        {"attempts": 4, "timeoff": "180s", "success": false}
+        {"attempts": 2, "timeoff": "120s", "success": false, "grade": "v6"},
+        {"attempts": 2, "timeoff": "120s", "success": false, "grade": "v5"},
+        {"attempts": 2, "timeoff": "120s", "success": true, "grade": "v5"},
+        {"attempts": 1, "timeoff": "120s", "success": true, "grade": "v4"},
+        {"attempts": 4, "timeoff": "180s", "success": false, "grade": "v6"}
       ]
     },
     {
