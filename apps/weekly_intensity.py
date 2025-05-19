@@ -47,7 +47,7 @@ for dt, data, is_out in sessions:
     if is_out:
         weekly[week_idx]['outdoor']    += br.get('outdoor',   0.0)
     else:
-        for key in ['fingerboard', 'deadhang', 'campusboard', 'pullup', 'project', 'outdoor', 'free_climbs']:
+        for key in ['fingerboard', 'deadhang', 'campusboard', 'pullup', 'project', 'outdoor']:
             weekly[week_idx][key] += br.get(key, 0.0)
 
 # Sort weeks
@@ -55,7 +55,7 @@ weeks = sorted(weekly.keys())
 x     = np.array(weeks)
 
 # Build arrays per exercise type
-types       = ['fingerboard', 'deadhang', 'campusboard', 'pullup', 'project', 'outdoor', 'free_climbs']
+types       = ['fingerboard', 'deadhang', 'campusboard', 'pullup', 'project', 'outdoor']
 data_arrays = {t: np.array([weekly[w].get(t, 0.0) for w in weeks]) for t in types}
 
 # Total intensity including outdoor-only
@@ -69,7 +69,6 @@ colors = {
     'project':     '#76448A',
     'outdoor':     '#AEB6BF',
     'deadhang':    '#D35400',
-    'free_climbs': '#9370DB'
 }
 
 # Plot stacked bars
@@ -78,9 +77,7 @@ bottom = np.zeros_like(x, dtype=float)
 for t in types:
     # custom labels for project and free_climbs
     if t == 'project':
-        lbl = 'Climbs (max effort)'
-    elif t == 'free_climbs':
-        lbl = 'Climbs (< max effort)'
+        lbl = 'Bouldering'
     else:
         lbl = t.capitalize()
 

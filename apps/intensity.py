@@ -106,10 +106,10 @@ ax.bar(x_all, cb_arr,   bottom=bottom, color=colors["campusboard"], label="Campu
 bottom += cb_arr
 ax.bar(x_all, pu_arr,   bottom=bottom, color=colors["pullup"],     label="Pullup")
 bottom += pu_arr
-ax.bar(x_all, proj_arr, bottom=bottom, color=colors["project"],    label="Climbs (max effort)")
+ax.bar(x_all, proj_arr, bottom=bottom, color=colors["project"],    label="Bouldering")
 bottom += proj_arr
-ax.bar(x_all, fc_arr,   bottom=bottom, color=colors["free_climbs"],label="Climbs (< max effort)")
-bottom += fc_arr
+#ax.bar(x_all, fc_arr,   bottom=bottom, color=colors["free_climbs"],label="Climbs (< max effort)")
+#bottom += fc_arr
 
 # continuous total line through all points
 ax.plot(x_all, total_arr,
