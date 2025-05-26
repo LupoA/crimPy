@@ -225,7 +225,7 @@ class WorkoutIntensityCalculator:
             "v6": 0.25,
             "v7": 0.4,
         }
-        FAILURE_MALUS = 0.1
+        FAILURE_MALUS = 0.12 # if not completed: 12% of total
         K_proj = 1
 
         total_intensity = 0.0
@@ -274,10 +274,11 @@ class WorkoutIntensityCalculator:
             "5b": 0.18, "5b+": 0.18, "5c": 0.2, "5c+": 0.225,
             "6a": 0.25, "6a+": 0.3, "6b": 0.35, "6b+": 0.4,
             "6c": 0.5, "6c+": 0.6, "7a": 0.7, "7a+": 0.85,
+            "7b": 0.98
         }
-        BONUS_FACTOR = 0.10  # +10% once per grade
-        MALUS_FACTOR = 0.5  # failed attempts score 50%
-        TOPOPE_MALUS = 0.2  # −20% on toprope sets
+        #BONUS_FACTOR = 0.10  # +10% once per grade
+        MALUS_FACTOR = 0.4  # failed attempts score 50%
+        TOPROPE_MALUS = 0.2  # −20% on toprope sets
 
         total = 0.0
         seen_bonus = set()
@@ -309,13 +310,13 @@ class WorkoutIntensityCalculator:
                 score = base * full_count + base * MALUS_FACTOR * fail_count
 
                 # 2) one‐time success bonus
-                if success and grade not in seen_bonus:
-                    score += base * BONUS_FACTOR
-                    seen_bonus.add(grade)
+                #if success and grade not in seen_bonus:
+                #    score += base * BONUS_FACTOR
+                #    seen_bonus.add(grade)
 
                 # 3) toprope malus
                 if is_toprope:
-                    score *= (1.0 - TOPOPE_MALUS)
+                    score *= (1.0 - TOPROPE_MALUS)
 
                 total += score
 

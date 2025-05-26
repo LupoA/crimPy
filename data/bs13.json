@@ -1,0 +1,23 @@
+{
+  "date": "24-05-2025",
+  "exercises": [
+    {
+      "type": "project",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"attempts": 1, "timeoff": "60s", "success": true, "grade": "v4"},
+{"attempts": 1, "timeoff": "60s", "success": true, "grade": "v3"},
+{"attempts": 1, "timeoff": "60s", "success": true, "grade": "v3"},
+{"attempts": 1, "timeoff": "60s", "success": true, "grade": "v4"},
+{"attempts": 1, "timeoff": "60s", "success": true, "grade": "v4"},
+{"attempts": 1, "timeoff": "60s", "success": true, "grade": "v4"},
+{"attempts": 1, "timeoff": "90s", "success": true, "grade": "v5"},
+{"attempts": 2, "timeoff": "90s", "success": true, "grade": "v5"},
+{"attempts": 1, "timeoff": "90s", "success": true, "grade": "v4"},
+{"attempts": 2, "timeoff": "100s", "success": false, "grade": "v7"},
+{"attempts": 1, "timeoff": "100s", "success": false, "grade": "v6"}
+      ]
+    }
+  ]
+}
