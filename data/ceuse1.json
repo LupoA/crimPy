@@ -1,0 +1,15 @@
+{
+  "date": "31-05-2025",
+  "climbs": [
+    {
+      "type": "lead",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"Grade": "6b", "attempts": 1, "success": true, "redpoint": false, "flash": false},
+{"Grade": "6c+", "attempts": 1, "success": true, "redpoint": false, "flash": false},
+{"Grade": "6b+", "attempts": 1, "success": true, "redpoint": false, "flash": false}
+      ]
+    }
+  ]
+}

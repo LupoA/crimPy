@@ -1,0 +1,48 @@
+{
+  "date": "04-06-2025",
+  "exercises": [
+    {
+      "type": "project",
+      "executed": true,
+      "order": 3,
+      "sets": [
+        {"attempts": 2, "timeoff": "300s", "success": true, "grade": "v5"},
+ {"attempts": 1, "timeoff": "300s", "success": false, "grade": "v5"},
+ {"attempts": 3, "timeoff": "300s", "success": false, "grade": "v5"},
+ {"attempts": 2, "timeoff": "300s", "success": false, "grade": "v6"},
+ {"attempts": 3, "timeoff": "300s", "success": true, "grade": "v6"}
+      ]
+    },
+    {
+      "type": "pullup",
+      "executed": true,
+      "order": 2,
+      "sets": [
+        {"edge": "bar", "repetitions": 16, "weight_kg": 0, "timeoff": "120s"},
+{"edge": "bar", "repetitions": 8, "weight_kg": 12, "timeoff": "180s"},
+{"edge": "bar", "repetitions": 8, "weight_kg": 12, "timeoff": "180s"},
+{"edge": "bar", "repetitions": 1, "weight_kg": 28, "timeoff": "120s"},
+{"edge": "bar", "repetitions": 1, "weight_kg": 24, "timeoff": "120s"},
+{"edge": "bar", "repetitions": 2, "weight_kg": 20, "timeoff": "120s"}
+      ]
+    },
+     {
+      "type": "deadhang",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "5s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "5s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "6s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "6s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "5s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "5m4s", "timeoff": "100s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "5s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "6s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "6s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "6s", "timeoff": "60s"},
+ {"edge": "45mm", "hands": 1, "weight_kg": -10, "timeon": "6s", "timeoff": "60s"}
+      ]
+    }
+  ]
+}

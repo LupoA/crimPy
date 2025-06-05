@@ -36,13 +36,15 @@ Excercises supported:
 Examples of plots produced:
 -
 
-![intensity.png](plots/Intensity.png)
-
 ![weekly_avg_intensity.png](plots/weekly_avg_intensity.png)
 
-![pullups_progression.png](plots/pullups_progression.png)
+![redpointed_grades.png](plots/redpointed_grades.png)
+
+![intensity.png](plots/Intensity.png)
 
 ![fingerboard_progression.png](plots/fingerboard_progression.png)
+
+![pullups_progression.png](plots/pullups_progression.png)
 
 ![campusboard_progression.png](plots/campusboard_progression.png)
 

@@ -1,0 +1,14 @@
+{
+  "date": "01-06-2025",
+  "climbs": [
+    {
+      "type": "lead",
+      "executed": true,
+      "order": 1,
+      "sets": [
+        {"Grade": "5c+", "attempts": 1, "success": true, "redpoint": false, "flash": false},
+{"Grade": "6a", "attempts": 1, "success": true, "redpoint": false, "flash": false}
+      ]
+    }
+  ]
+}
